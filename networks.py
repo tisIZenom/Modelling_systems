@@ -4,6 +4,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import random 
+import time 
 
 
 # These are the parameters that control how the network forms (refer to documentation)
@@ -33,3 +34,28 @@ plt.show()
 for node in Good.nodes():
     Good.nodes[node]['Opinion'] = random.choice([0,1])
 
+# let us have a simple update sysmtem for the opinions 
+#Defining a function would be better 
+
+def update_opinion(G, conformity_strenght=0.5):
+    new_opinion = {}
+    neighbor_opinion = [Good.nodes[neighbor]['opinion'] for neighbor in Good.neighbors(node)]
+    if neighbor_opinion:
+        majority = round(sum(neighbor_opinion) / len(neighbor_opinion))
+        # the agent likes the new opinion now due to bias 
+        new_opinion[node] = (
+            majority if random.random() < conformity_strenght else current 
+        )
+    for node, opinion in new_opinion.items():
+        Good.nodes[node]['opinion'] = opinion
+
+#####################################################################
+
+
+import time
+
+for t in range(10):  # 10 rounds of updates
+    update_opinion(Good)
+    opinion = [Good.nodes[n]['opinion'] for n in Goof.nodes()]
+    print(f"Round {t+1}: {sum(opinion)} accept, {len(opinion) - sum(opinion)} reject")
+    time.sleep(0.5)
